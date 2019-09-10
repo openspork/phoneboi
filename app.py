@@ -7,23 +7,68 @@ app = Flask(__name__)
 with open("/home/christian/secrets/cw.token") as file:
     api_key = file.read().replace("\n", "")
 
-auth_header = {"Authorization": "Basic " + api_key, "Content-Type": "application/json"}
+with open("/home/christian/secrets/cw.clientid") as file:
+    client_id = file.read().replace("\n", "")
+
+auth_header = {
+    "Authorization": "Basic " + api_key,
+    "Content-Type": "application/json",
+    "clientid": client_id,
+}
 
 cw_url = "https://api-na.myconnectwise.net/v4_6_release/apis/3.0"
 
 
-def get_contacts(name):
-    query = (
-        "?conditions=firstName like '%" + name + "%' OR lastName like '%" + name + "%'"
-    )
-    request_text = cw_url + "/company/contacts" + query
+def execute_query(path, query, page=1, data=[]):
+    #print("processing page %s" % page)
+    request_text = cw_url + path + query + "&page=" + str(page) + "pagesize=1000"
     r = get(request_text, headers=auth_header)
-    data = loads(r.text)
-    return data
+    current_page = loads(r.text)
+    #print("current page: %s" % str(current_page)[:128])
+    if current_page == [] and page != 1:
+        #print("we are done")
+        return data
+
+    data = data + current_page
+
+    return execute_query(path, query, page + 1, data)
 
 
-@app.route("/<name>")
-def hello_world(name):
+def get_contacts(contact_name):
+    return execute_query(
+        "/company/contacts",
+        "?conditions=firstName like '%"
+        + contact_name
+        + "%' OR lastName like '%"
+        + contact_name
+        + "%'",
+    )
+
+
+def get_computers(client_id):
+    return execute_query(
+        "/company/configurations", "?conditions=type/name like 'Managed Workstation'"
+    )
+
+
+def get_companies():
+    return execute_query("/company/companies", "?conditions=status/name='Active'")
+
+
+@app.route("/")
+def index():
+    companies = get_companies()
+    print(len(companies))
+
+    for company in companies:
+        print(str(company["id"]) + " " + company["name"])
+        get_computers(company["id"])
+
+    return dumps(companies)
+
+
+@app.route("/api/<name>")
+def api_contacts(name):
     return_data = {}
     return_data["type"] = "message"
     return_string = None
