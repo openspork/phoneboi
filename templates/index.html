@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>PhoneBoi</title>
+	</head>
+	<body>
+		<h1>VOIP - User Licenses</h1>
+		<table>
+			<th>Company</th>
+			<th>Configurations</th>
+			<th>Products (Active)</th>
+			<th>Product Quantity (Sum)</th>
+			{% for company in companies %}
+				<tr>
+					<td>{{ company["name"] }}</td>
+					<td>{{ company["configurations"] }}</td>
+					<td>{{ company["products"] }}</td>
+					<td>{{ company ["product_sum"] }} </td>
+				</tr>
+			{% endfor %}
+		</table>
+	</body>
+</html>

@@ -1,62 +1,9 @@
 from json import dumps, loads
 from requests import get
 from flask import Flask, render_template
+from util.process_api import *
 
 app = Flask(__name__)
-
-with open("/home/christian/secrets/cw.token") as file:
-    api_key = file.read().replace("\n", "")
-
-with open("/home/christian/secrets/cw.clientid") as file:
-    client_id = file.read().replace("\n", "")
-
-auth_header = {
-    "Authorization": "Basic " + api_key,
-    "Content-Type": "application/json",
-    "clientid": client_id,
-}
-
-cw_url = "https://api-na.myconnectwise.net/v4_6_release/apis/3.0"
-
-
-def execute_query(path, query, page=1, data=[]):
-    # print("processing page %s" % page)
-    request_text = "%s%s%s&pagesize=1000&page=%s" % (cw_url, path, query, page)
-    # print(request_text)
-    r = get(request_text, headers=auth_header)
-    current_page = loads(r.text)
-    # print("current page: %s" % str(current_page)[:128])
-    if (current_page == [] and page != 1) or current_page == {}:
-        # print("we are done")
-        return data
-    data = data + current_page
-    return execute_query(path, query, page + 1, data)
-
-
-def get_companies():
-    return execute_query("/company/companies", "?conditions=status/name='Active'")
-
-
-def get_configurations(company_id, configuration_type):
-    return execute_query(
-        path="/company/configurations",
-        query="?conditions=type/name like '%s' AND status/name NOT LIKE '%%Inactive' AND company/id=%s"
-        % (configuration_type, company_id),
-    )
-
-
-def get_agreements(agreement_type):
-    return execute_query(
-        path="/finance/agreements", query="?conditions=type/name='%s'" % agreement_type
-    )
-
-
-def get_products(agreement_id, product_identifier):
-    return execute_query(
-        path="/finance/agreements/%s/additions" % agreement_id,
-        query="?conditions=product/identifier='%s' AND cancelledDate=null"
-        % product_identifier,
-    )
 
 
 @app.route("/")
@@ -65,16 +12,7 @@ def index():
     companies = []
 
     for agreement in get_agreements("ITSG - VOIP"):
-        print(agreement["name"])
-        print(agreement["company"]["id"])
-        print(
-            len(
-                get_configurations(
-                    company_id=agreement["company"]["id"],
-                    configuration_type="Managed Phone",
-                )
-            )
-        )
+        print("Processing %s: %s" % (agreement["company"]["name"], agreement["name"]))
 
         company = {}
         company["name"] = agreement["company"]["name"]
