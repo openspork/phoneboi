@@ -21,14 +21,15 @@ cw_url = "https://api-na.myconnectwise.net/v4_6_release/apis/3.0"
 
 def execute_query(path, query, page=1, data=[]):
     #print("processing page %s" % page)
-    request_text = cw_url + path + query + "&page=" + str(page) + "pagesize=1000"
+    request_text = cw_url + path + query + "&pagesize=1000&page=" + str(page)
     r = get(request_text, headers=auth_header)
     current_page = loads(r.text)
     #print("current page: %s" % str(current_page)[:128])
     if current_page == [] and page != 1:
         #print("we are done")
         return data
-
+    #for company in current_page:
+        #print(company["name"])
     data = data + current_page
 
     return execute_query(path, query, page + 1, data)
@@ -47,7 +48,7 @@ def get_contacts(contact_name):
 
 def get_computers(client_id):
     return execute_query(
-        "/company/configurations", "?conditions=type/name like 'Managed Workstation'"
+        "/company/configurations", "?conditions=type/name like 'Managed Workstation' AND status/name NOT LIKE '\%Inactive' AND company/id=" + str(client_id)
     )
 
 
@@ -60,11 +61,12 @@ def index():
     companies = get_companies()
     print(len(companies))
 
-    for company in companies:
-        print(str(company["id"]) + " " + company["name"])
-        get_computers(company["id"])
+    string = ""
 
-    return dumps(companies)
+    for company in companies:
+        string = string + str(company["id"]) + " " + company["name"] + ": " + str(len(get_computers(company["id"]))) + "<br>\n"
+        print(string)
+    return string
 
 
 @app.route("/api/<name>")
