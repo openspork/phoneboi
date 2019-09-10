@@ -1,6 +1,6 @@
 from json import dumps, loads
 from requests import get
-from flask import Flask
+from flask import Flask, render_template
 
 app = Flask(__name__)
 
@@ -21,18 +21,74 @@ cw_url = "https://api-na.myconnectwise.net/v4_6_release/apis/3.0"
 
 def execute_query(path, query, page=1, data=[]):
     #print("processing page %s" % page)
-    request_text = cw_url + path + query + "&pagesize=1000&page=" + str(page)
+    request_text =  "%s%s%s&pagesize=1000&page=%s" % (cw_url, path, query, page)
+    #print(request_text)
     r = get(request_text, headers=auth_header)
     current_page = loads(r.text)
     #print("current page: %s" % str(current_page)[:128])
-    if current_page == [] and page != 1:
+    if (current_page == [] and page != 1) or current_page == {}:
         #print("we are done")
         return data
-    #for company in current_page:
-        #print(company["name"])
     data = data + current_page
-
     return execute_query(path, query, page + 1, data)
+
+
+def get_companies():
+    return execute_query("/company/companies", "?conditions=status/name='Active'")
+
+
+def get_configurations(company_id, configuration_type):
+    return execute_query(
+        path = "/company/configurations",
+        query = "?conditions=type/name like '%s' AND status/name NOT LIKE '%%Inactive' AND company/id=%s" % (configuration_type, company_id)
+    )
+
+
+def get_agreements(agreement_type):
+    return execute_query(
+        path = "/finance/agreements",
+        query = "?conditions=type/name='%s'" % agreement_type
+    )
+
+def get_products(agreement_id, product_identifier):
+    return execute_query(
+        path = "/finance/agreements/%s/additions" % agreement_id,
+        query = "?conditions=product/identifier='%s' AND cancelledDate=null" % product_identifier
+    )
+
+
+@app.route("/")
+def index():
+
+    companies = []
+
+    for agreement in get_agreements("ITSG - VOIP"):
+        print(agreement["name"])
+        print(agreement["company"]["id"])
+        print(len(get_configurations(
+            company_id = agreement["company"]["id"],
+            configuration_type = "Managed Phone")
+        ))
+
+        company = {}
+        company["name"] = agreement["company"]["name"]
+        company["configurations"] = len(get_configurations(
+            company_id = agreement["company"]["id"],
+            configuration_type = "Managed Phone")
+        )
+
+        company["additions"] = len(get_products(
+            agreement_id = agreement["id"],
+            product_identifier = "VOIP - User Licenses"
+            ))
+
+        companies.append(company)
+
+
+    return render_template("index.html", companies = companies)
+
+
+
 
 
 def get_contacts(contact_name):
@@ -44,30 +100,6 @@ def get_contacts(contact_name):
         + contact_name
         + "%'",
     )
-
-
-def get_computers(client_id):
-    return execute_query(
-        "/company/configurations", "?conditions=type/name like 'Managed Workstation' AND status/name NOT LIKE '\%Inactive' AND company/id=" + str(client_id)
-    )
-
-
-def get_companies():
-    return execute_query("/company/companies", "?conditions=status/name='Active'")
-
-
-@app.route("/")
-def index():
-    companies = get_companies()
-    print(len(companies))
-
-    string = ""
-
-    for company in companies:
-        string = string + str(company["id"]) + " " + company["name"] + ": " + str(len(get_computers(company["id"]))) + "<br>\n"
-        print(string)
-    return string
-
 
 @app.route("/api/<name>")
 def api_contacts(name):
