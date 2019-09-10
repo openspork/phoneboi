@@ -20,14 +20,14 @@ cw_url = "https://api-na.myconnectwise.net/v4_6_release/apis/3.0"
 
 
 def execute_query(path, query, page=1, data=[]):
-    #print("processing page %s" % page)
-    request_text =  "%s%s%s&pagesize=1000&page=%s" % (cw_url, path, query, page)
-    #print(request_text)
+    # print("processing page %s" % page)
+    request_text = "%s%s%s&pagesize=1000&page=%s" % (cw_url, path, query, page)
+    # print(request_text)
     r = get(request_text, headers=auth_header)
     current_page = loads(r.text)
-    #print("current page: %s" % str(current_page)[:128])
+    # print("current page: %s" % str(current_page)[:128])
     if (current_page == [] and page != 1) or current_page == {}:
-        #print("we are done")
+        # print("we are done")
         return data
     data = data + current_page
     return execute_query(path, query, page + 1, data)
@@ -39,21 +39,23 @@ def get_companies():
 
 def get_configurations(company_id, configuration_type):
     return execute_query(
-        path = "/company/configurations",
-        query = "?conditions=type/name like '%s' AND status/name NOT LIKE '%%Inactive' AND company/id=%s" % (configuration_type, company_id)
+        path="/company/configurations",
+        query="?conditions=type/name like '%s' AND status/name NOT LIKE '%%Inactive' AND company/id=%s"
+        % (configuration_type, company_id),
     )
 
 
 def get_agreements(agreement_type):
     return execute_query(
-        path = "/finance/agreements",
-        query = "?conditions=type/name='%s'" % agreement_type
+        path="/finance/agreements", query="?conditions=type/name='%s'" % agreement_type
     )
+
 
 def get_products(agreement_id, product_identifier):
     return execute_query(
-        path = "/finance/agreements/%s/additions" % agreement_id,
-        query = "?conditions=product/identifier='%s' AND cancelledDate=null" % product_identifier
+        path="/finance/agreements/%s/additions" % agreement_id,
+        query="?conditions=product/identifier='%s' AND cancelledDate=null"
+        % product_identifier,
     )
 
 
@@ -65,30 +67,39 @@ def index():
     for agreement in get_agreements("ITSG - VOIP"):
         print(agreement["name"])
         print(agreement["company"]["id"])
-        print(len(get_configurations(
-            company_id = agreement["company"]["id"],
-            configuration_type = "Managed Phone")
-        ))
+        print(
+            len(
+                get_configurations(
+                    company_id=agreement["company"]["id"],
+                    configuration_type="Managed Phone",
+                )
+            )
+        )
 
         company = {}
         company["name"] = agreement["company"]["name"]
-        company["configurations"] = len(get_configurations(
-            company_id = agreement["company"]["id"],
-            configuration_type = "Managed Phone")
+        company["configurations"] = len(
+            get_configurations(
+                company_id=agreement["company"]["id"],
+                configuration_type="Managed Phone",
+            )
         )
 
-        company["additions"] = len(get_products(
-            agreement_id = agreement["id"],
-            product_identifier = "VOIP - User Licenses"
-            ))
+        products = get_products(
+            agreement_id=agreement["id"], product_identifier="VOIP - User Licenses"
+        )
+
+        company["products"] = len(products)
+
+        quantity_sum = 0
+        for product in products:
+            quantity_sum = quantity_sum + product["quantity"]
+
+        company["product_sum"] = quantity_sum
 
         companies.append(company)
 
-
-    return render_template("index.html", companies = companies)
-
-
-
+    return render_template("index.html", companies=companies)
 
 
 def get_contacts(contact_name):
@@ -100,6 +111,7 @@ def get_contacts(contact_name):
         + contact_name
         + "%'",
     )
+
 
 @app.route("/api/<name>")
 def api_contacts(name):
