@@ -9,8 +9,8 @@ app = Flask(__name__)
 products = {}
 
 products["phones"] = { "agreement_name":"ITSG - VOIP", "product_identifier":"VOIP - User Licenses", "configuration_type":"Managed Phone" }
-products["workstations"] = { "agreement_name":"MSP%", "product_identifier":"Add Workstations - Pro", "configuration_type":"Managed Workstation" }
-products["servers"] = { "agreement_name":"MSP%", "product_identifier":"Add Servers - Pro", "configuration_type":"Managed Server" }
+products["workstations"] = { "agreement_name":"MSP%", "product_identifier":"Add Workstations%", "configuration_type":"Managed Workstation" }
+products["servers"] = { "agreement_name":"MSP%", "product_identifier":"Add Servers%", "configuration_type":"Managed Server" }
 
 for key, val in products.items():
 

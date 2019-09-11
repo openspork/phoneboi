@@ -22,7 +22,7 @@ def get_agreements(agreement_type):
 def get_products(agreement_id, product_identifier):
     return execute_query(
         path="/finance/agreements/%s/additions" % agreement_id,
-        query="?conditions=product/identifier='%s' AND cancelledDate=null"
+        query="?conditions=product/identifier LIKE '%s' AND cancelledDate=null"
         % product_identifier,
     )
 
@@ -42,17 +42,26 @@ def process_products(agreement_name, product_identifier, configuration_type):
             )
         )
 
+
+
         products = get_products(
             agreement_id=agreement["id"], product_identifier=product_identifier
         )
 
         company["products"] = len(products)
 
-        quantity_sum = 0
+        product_sum = 0
+        billed_sum = 0
+        less_sum = 0
+        
         for product in products:
-            quantity_sum = quantity_sum + product["billedQuantity"]
+            product_sum = product_sum + product["quantity"]
+            billed_sum = billed_sum + product["billedQuantity"]
+            less_sum = less_sum + product["lessIncluded"]
 
-        company["product_sum"] = quantity_sum
+        company["product_sum"] = product_sum
+        company["billed_sum"] = billed_sum
+        company["configurations_adj"] = company["configurations"] - less_sum
 
         companies.append(company)
     return companies

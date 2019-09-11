@@ -9,17 +9,19 @@
 		<h1>{{ key }}</h1>
 		<table>
 			<th>Company</th>
-			<th>Configurations</th>
-			<th>Products (Active)</th>
-			<th>Billed Product Quantity (Sum)</th>
-
-
+			<th>Configs (Sum)</th>
+			<th>Configs (Adj.)</th>
+			<th>Products</th>
+			<th>Product Count (Sum)</th>
+			<th>Product Count (Adj.)</th>
 			{% for company in val %}
 				<tr>
 					<td>{{ company["name"] }}</td>
 					<td>{{ company["configurations"] }}</td>
+					<td>{{ company["configurations_adj"] }}</td>
 					<td>{{ company["products"] }}</td>
 					<td>{{ company ["product_sum"] }} </td>
+					<td>{{ company ["billed_sum"] }} </td>
 				</tr>
 			{% endfor %}
 		</table>
