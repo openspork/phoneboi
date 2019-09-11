@@ -19,7 +19,7 @@ cw_url = "https://api-na.myconnectwise.net/v4_6_release/apis/3.0"
 def execute_query(path, query, page=1, data=[]):
     # print("processing page %s" % page)
     request_text = "%s%s%s&pagesize=1000&page=%s" % (cw_url, path, query, page)
-    print(request_text)
+    #print(request_text)
     r = get(request_text, headers=auth_header)
     current_page = loads(r.text)
     # print("current page: %s" % str(current_page)[:128])
@@ -27,5 +27,8 @@ def execute_query(path, query, page=1, data=[]):
         # print("we are done")
         return data
     data = data + current_page
-    # we don't need to do this if # of current page < 1000
-    return execute_query(path, query, page + 1, data)
+    # we don't need to recurse if # on current page < page size
+    if len(current_page) < 1000:
+        return data
+    else:
+        return execute_query(path, query, page + 1, data)
