@@ -6,38 +6,24 @@ from util.process_api import *
 app = Flask(__name__)
 
 
+products = {}
+
+products["phones"] = { "agreement_name":"ITSG - VOIP", "product_identifier":"VOIP - User Licenses", "configuration_type":"Managed Phone" }
+products["workstations"] = { "agreement_name":"MSP%", "product_identifier":"Add Workstations - Pro", "configuration_type":"Managed Workstation" }
+products["servers"] = { "agreement_name":"MSP%", "product_identifier":"Add Servers - Pro", "configuration_type":"Managed Server" }
+
+for key, val in products.items():
+
+    products[key] = process_products(
+        agreement_name=val["agreement_name"],
+        product_identifier=val["product_identifier"],
+        configuration_type=val["configuration_type"],
+    )
+
+
 @app.route("/")
 def index():
-
-    companies = []
-
-    for agreement in get_agreements("ITSG - VOIP"):
-        print("Processing %s: %s" % (agreement["company"]["name"], agreement["name"]))
-
-        company = {}
-        company["name"] = agreement["company"]["name"]
-        company["configurations"] = len(
-            get_configurations(
-                company_id=agreement["company"]["id"],
-                configuration_type="Managed Phone",
-            )
-        )
-
-        products = get_products(
-            agreement_id=agreement["id"], product_identifier="VOIP - User Licenses"
-        )
-
-        company["products"] = len(products)
-
-        quantity_sum = 0
-        for product in products:
-            quantity_sum = quantity_sum + product["quantity"]
-
-        company["product_sum"] = quantity_sum
-
-        companies.append(company)
-
-    return render_template("index.html", companies=companies)
+    return render_template("index.html", products=products)
 
 
 def get_contacts(contact_name):
