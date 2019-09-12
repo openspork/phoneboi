@@ -17,32 +17,46 @@
 				{% for product_types, companies in products.items() %}
 					<h1>{{ product_types }}</h1>
 					<table>
-						<th>Company</th>
-						<th>Configs (Sum)</th>
-						<th>Configs (Adj.)</th>
-						<th>Products</th>
-						<th>Product Count (Sum)</th>
-						<th>Product Count (Adj.)</th>
-						<th></th>
-						{% for company in companies %}
+						<thead>
 							<tr>
-								<td>{{ company["company_name"] }}</td>
-								<td>{{ company["configuration_count"] }}</td>
-								<td>{{ company["configuration_count_adj"] }}</td>
-								<td>{{ company["product_count"] }}</td>
-								<td>{{ company ["product_sum"] }}</td>
-								<td>{{ company ["billed_sum"] }}</td>
-								<td><button class="update" id="{{ company['uuid'] }}">Update Product Count</button></td>
+								<th>Company</th>
+								<th>Configs (Sum)</th>
+								<th>Configs (Adj.)</th>
+								<th>Products</th>
+								<th>Product Count (Sum)</th>
+								<th>Product Count (Adj.)</th>
+								<th></th>
 							</tr>
-						{% endfor %}
+						</thead>
+						<tbody>
+							{% for uuid, company in companies.items() %}
+								<tr>
+									<td>{{ company["company_name"] }}</td>
+									<td>{{ company["configuration_count"] }}</td>
+									<td>{{ company["configuration_count_adj"] }}</td>
+									<td>{{ company["product_count"] }}</td>
+									<td>{{ company ["product_sum"] }}</td>
+									<td>{{ company ["billed_sum"] }}</td>
+									<td><button class="update" id="{{ uuid }}">Update Product Count</button></td>
+								</tr>
+							{% endfor %}
+						</thead>
 					</table>
 				{% endfor %}
 			{% endif %}
 		</div>
 		<div>
-			<table id="log">
-				<th>Entry</th>
-				<th>Timestamp</th>
+			<table>
+				<thead>
+					<tr>
+						<th>Entry</th>
+						<th>Timestamp</th>
+						<th>Status</th>
+					</tr>
+				</thead>
+				<tbody id = "log">
+					
+				</tbody>
 			</table>
 		</div>
 		<div>

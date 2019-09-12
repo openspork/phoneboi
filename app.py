@@ -5,7 +5,7 @@ from json import dumps, loads
 from requests import get
 from flask import Flask, redirect, render_template, url_for
 from util.process_api import *
-from flask_socketio import SocketIO, emit, join_room, leave_room, close_room, rooms, disconnect
+from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
 
@@ -19,7 +19,8 @@ thread_lock = Lock()
 
 @socketio.on('update', namespace='/test')
 def update(message):
-    print('UUID received' + message["data"])
+    print('UUID received ' + message["data"])
+
 
 
 @socketio.on('connect', namespace='/test')

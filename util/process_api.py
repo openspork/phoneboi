@@ -1,6 +1,6 @@
 from .helpers import *
 from uuid import uuid4
-
+from operator import itemgetter
 
 def get_companies():
     return execute_query("/company/companies", "?conditions=status/name='Active'")
@@ -29,13 +29,12 @@ def get_products(agreement_id, product_identifier):
 
 
 def process_products(agreement_name, product_identifier, configuration_type):
-    companies = []
+    companies = {}
 
     for agreement in get_agreements(agreement_name):
         print("Processing %s: %s" % (agreement["company"]["name"], agreement["name"]))
 
         company = {}
-        company["uuid"] = uuid4()
         company["company_name"] = agreement["company"]["name"]
         company["configuration_count"] = len(
             get_configurations(
@@ -65,8 +64,9 @@ def process_products(agreement_name, product_identifier, configuration_type):
         company["billed_sum"] = billed_sum
         company["configuration_count_adj"] = company["configuration_count"] - less_sum
 
-        companies.append(company)
-    return companies
+        companies[uuid4()] = company
+    return sorted(companies, key=itemgetter("company_name")) 
+
 
 def init_products():
     products = {}
