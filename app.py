@@ -1,30 +1,64 @@
+from threading import Lock
+from time import mktime
+from datetime import datetime, timezone
 from json import dumps, loads
 from requests import get
-from flask import Flask, render_template
+from flask import Flask, redirect, render_template, url_for
 from util.process_api import *
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, emit, join_room, leave_room, close_room, rooms, disconnect
 
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 
-if __name__ == '__main__':
-    socketio.run(app)
+products = None
 
-products = {}
+thread = None
+thread_lock = Lock()
 
-products["phones"] = { "agreement_name":"ITSG - VOIP", "product_identifier":"VOIP - User Licenses", "configuration_type":"Managed Phone" }
-products["workstations"] = { "agreement_name":"MSP%", "product_identifier":"Add Workstations%", "configuration_type":"Managed Workstation" }
-products["servers"] = { "agreement_name":"MSP%", "product_identifier":"Add Servers%", "configuration_type":"Managed Server" }
+@socketio.on('update', namespace='/test')
+def update(message):
+    print('UUID received' + message["data"])
 
-for key, val in products.items():
 
-    products[key] = process_products(
-        agreement_name=val["agreement_name"],
-        product_identifier=val["product_identifier"],
-        configuration_type=val["configuration_type"],
-    )
+@socketio.on('connect', namespace='/test')
+def test_connect():
+    print('Client connected')
+    start_heartbeat_thread()
+    emit('server_heartbeat', {'data': 'Connected', 'count': 0})
+
+
+@socketio.on('disconnect', namespace='/test')
+def test_disconnect():
+    print('Client disconnected')
+
+
+def heartbeat_thread():
+    """Example of how to send server generated events to clients."""
+    count = 0
+    while True:
+        socketio.sleep(1)
+        count += 1
+        utc_datetime = datetime.now(timezone.utc)
+        utc_datetime_for_js = int(mktime(utc_datetime.timetuple())) * 1000
+        socketio.emit('heartbeat',
+                      {'datetime': utc_datetime_for_js, 'count': count},
+                      namespace='/test')
+
+
+def start_heartbeat_thread():
+    global thread
+    with thread_lock:
+        if thread is None:
+            thread = socketio.start_background_task(target=heartbeat_thread)
+
+
+@app.route("/init")
+def init():
+    global products
+    products = init_products()
+    return redirect(url_for('index'))
 
 
 @app.route("/")
@@ -95,3 +129,7 @@ def api_contacts(name):
     return_data["text"] = return_string
 
     return dumps(return_data)
+
+
+if __name__ == '__main__':
+    socketio.run(app, debug = True)

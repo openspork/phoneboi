@@ -3,28 +3,51 @@
 	<head>
 		<meta charset="utf-8">
 		<title>PhoneBoi</title>
+		<script src="https://code.jquery.com/jquery-3.4.1.js"
+		integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+		crossorigin="anonymous"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"
+		integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I="
+		crossorigin="anonymous"></script>
+		<script src="static/socketio.js"></script>
 	</head>
 	<body>
-		{% for key, val in products.items() %}
-		<h1>{{ key }}</h1>
-		<table>
-			<th>Company</th>
-			<th>Configs (Sum)</th>
-			<th>Configs (Adj.)</th>
-			<th>Products</th>
-			<th>Product Count (Sum)</th>
-			<th>Product Count (Adj.)</th>
-			{% for company in val %}
-				<tr>
-					<td>{{ company["name"] }}</td>
-					<td>{{ company["configurations"] }}</td>
-					<td>{{ company["configurations_adj"] }}</td>
-					<td>{{ company["products"] }}</td>
-					<td>{{ company ["product_sum"] }} </td>
-					<td>{{ company ["billed_sum"] }} </td>
-				</tr>
-			{% endfor %}
-		</table>
-	{% endfor %}
+		<div>
+			{% if products is not none %}
+				{% for product_types, companies in products.items() %}
+					<h1>{{ product_types }}</h1>
+					<table>
+						<th>Company</th>
+						<th>Configs (Sum)</th>
+						<th>Configs (Adj.)</th>
+						<th>Products</th>
+						<th>Product Count (Sum)</th>
+						<th>Product Count (Adj.)</th>
+						<th></th>
+						{% for company in companies %}
+							<tr>
+								<td>{{ company["company_name"] }}</td>
+								<td>{{ company["configuration_count"] }}</td>
+								<td>{{ company["configuration_count_adj"] }}</td>
+								<td>{{ company["product_count"] }}</td>
+								<td>{{ company ["product_sum"] }}</td>
+								<td>{{ company ["billed_sum"] }}</td>
+								<td><button class="update" id="{{ company['uuid'] }}">Update Product Count</button></td>
+							</tr>
+						{% endfor %}
+					</table>
+				{% endfor %}
+			{% endif %}
+		</div>
+		<div>
+			<table id="log">
+				<th>Entry</th>
+				<th>Timestamp</th>
+			</table>
+		</div>
+		<div>
+			<h2>Server status:</h2>
+			<text id="heartbeat"></text>
+		</div>
 	</body>
 </html>

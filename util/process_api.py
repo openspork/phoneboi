@@ -1,4 +1,5 @@
 from .helpers import *
+from uuid import uuid4
 
 
 def get_companies():
@@ -34,8 +35,9 @@ def process_products(agreement_name, product_identifier, configuration_type):
         print("Processing %s: %s" % (agreement["company"]["name"], agreement["name"]))
 
         company = {}
-        company["name"] = agreement["company"]["name"]
-        company["configurations"] = len(
+        company["uuid"] = uuid4()
+        company["company_name"] = agreement["company"]["name"]
+        company["configuration_count"] = len(
             get_configurations(
                 company_id=agreement["company"]["id"],
                 configuration_type=configuration_type,
@@ -48,7 +50,7 @@ def process_products(agreement_name, product_identifier, configuration_type):
             agreement_id=agreement["id"], product_identifier=product_identifier
         )
 
-        company["products"] = len(products)
+        company["product_count"] = len(products)
 
         product_sum = 0
         billed_sum = 0
@@ -61,7 +63,23 @@ def process_products(agreement_name, product_identifier, configuration_type):
 
         company["product_sum"] = product_sum
         company["billed_sum"] = billed_sum
-        company["configurations_adj"] = company["configurations"] - less_sum
+        company["configuration_count_adj"] = company["configuration_count"] - less_sum
 
         companies.append(company)
     return companies
+
+def init_products():
+    products = {}
+
+    products["phones"] = { "agreement_name":"ITSG - VOIP", "product_identifier":"VOIP - User Licenses", "configuration_type":"Managed Phone" }
+    products["workstations"] = { "agreement_name":"MSP%", "product_identifier":"Add Workstations%", "configuration_type":"Managed Workstation" }
+    products["servers"] = { "agreement_name":"MSP%", "product_identifier":"Add Servers%", "configuration_type":"Managed Server" }
+
+    for key, val in products.items():
+
+        products[key] = process_products(
+            agreement_name=val["agreement_name"],
+            product_identifier=val["product_identifier"],
+            configuration_type=val["configuration_type"],
+        )
+    return products
