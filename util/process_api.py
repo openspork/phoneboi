@@ -65,6 +65,7 @@ def process_products(agreement_name, product_identifier, configuration_type):
         # Create our agreement, if doesn't exist
         query = Agreement.select().where(Agreement.id == agreement["id"])
         if not query.exists():
+            print("creating agreement: %s of type: %s" % (agreement["name"], configuration_type))
             agreement = Agreement.create(
                 id=agreement["id"], name=agreement["name"], company=company, configuration_type = configuration_type
             )

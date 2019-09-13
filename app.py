@@ -64,25 +64,27 @@ def init():
 
 @app.route("/")
 def index():
+    agreements = []
     for agreement in Agreement.select():
-        company = agreement.company
-        configuration_type = agreement.configuration_type
-        configuration_count = len(Configuration.select().where(Configuration.agreement == agreement))
-
-        print(len(Configuration.select().where(Configuration.agreement == agreement)))
-        print(len(agreement.configurations))
-
-
+        agreement_fmt = {}
+        agreement_fmt["company_name"] = agreement.company.name
+        agreement_fmt["configuration_type"] = agreement.configuration_type.name
+        agreement_fmt["addition_sum"] = len(agreement.additions)
+        addition_quantity_sum = 0
+        addition_less_included_sum = 0
+        for addition in agreement.additions:
+            addition_quantity_sum = addition_quantity_sum + addition.quantity
+            addition_less_included_sum = addition_less_included_sum + addition.less_included
+        agreement_fmt["addition_quantity_sum"] = addition_quantity_sum
+        agreement_fmt["addition_less_included_sum"] = addition_less_included_sum
+        agreement_fmt["addition_quantity_sum_adj"] = addition_quantity_sum - addition_less_included_sum
+        agreement_fmt["configuration_sum"] = len(agreement.configurations)       
+        agreement_fmt["configuration_sum_adj"] = agreement_fmt["configuration_sum"] - addition_less_included_sum
+        agreements.append(agreement_fmt)
 
 
     return render_template("index.html", 
-        companies=Company.select(),
-        agreements=Agreement.select(),
-        configuration_types=ConfigurationType.select(),
-        configurations=Configuration.select(),
-        additions=Addition.select(),
-        products=None
-    )
+        agreements = agreements)
 
 
 def get_contacts(contact_name):

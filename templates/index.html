@@ -13,37 +13,35 @@
 	</head>
 	<body>
 		<div>
-			{% if products is not none %}
-				{% for product_types, companies in products.items() %}
-					<h1>{{ product_types }}</h1>
-					<table>
-						<thead>
-							<tr>
-								<th>Company</th>
-								<th>Configs (Sum)</th>
-								<th>Configs (Adj.)</th>
-								<th>Products</th>
-								<th>Product Count (Sum)</th>
-								<th>Product Count (Adj.)</th>
-								<th></th>
-							</tr>
-						</thead>
-						<tbody>
-							{% for uuid, company in companies.items() %}
-								<tr>
-									<td>{{ company["company_name"] }}</td>
-									<td>{{ company["configuration_count"] }}</td>
-									<td>{{ company["configuration_count_adj"] }}</td>
-									<td>{{ company["product_count"] }}</td>
-									<td>{{ company ["product_sum"] }}</td>
-									<td>{{ company ["billed_sum"] }}</td>
-									<td><button class="update" id="{{ uuid }}">Update Product Count</button></td>
-								</tr>
-							{% endfor %}
-						</thead>
-					</table>
-				{% endfor %}
-			{% endif %}
+			<table>
+				<thead>
+					<tr>
+						<th>Company</th>
+						<th>Type</th>
+						<th>Additions (Sum)</th>
+						<th>Less Incl.</th>
+						<th>Configs (Sum)</th>
+						<th>Configs (Adj.)</th>
+						<th>Quantity (Sum)</th>
+						<th>Quantity (Adj.)</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for agreement in agreements %}
+						<tr>
+							<td>{{ agreement["company_name"] }}</td>
+							<td>{{ agreement["configuration_type"] }}</td>
+							<td>{{ agreement["addition_sum"] }}</td>
+							<td>{{ agreement["addition_less_included_sum"] }}</td>
+							<td>{{ agreement["configuration_sum"] }}</td>
+							<td>{{ agreement["configuration_sum_adj"] }}</td>
+							<td>{{ agreement ["addition_quantity_sum"] }}</td>
+							<td>{{ agreement ["addition_quantity_sum_adj"] }}</td>
+							<td><button class="update" id="{{ uuid }}">Update Product Count</button></td>
+						</tr>
+					{% endfor %}
+				</thead>
+			</table>
 		</div>
 		<div>
 			<table>
