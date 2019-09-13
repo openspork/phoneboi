@@ -14,19 +14,19 @@ class Company(BaseModel):
     pass
 
 
-class Agreement(BaseModel):
-    company = ForeignKeyField(Company, backref="agreements")
-
-
-class ConfigurationType(BaseModel):
+class ConfigurationType(BaseModel):    
     pass
 
 
+class Agreement(BaseModel):
+    configuration_type = ForeignKeyField(ConfigurationType, backref='agreements')
+    company = ForeignKeyField(Company, backref="agreements")
+
 class Configuration(BaseModel):
     configuration_type = ForeignKeyField(ConfigurationType, backref="configurations")
-    configuration_type = ForeignKeyField(Agreement, backref="configurations")
+    agreement = ForeignKeyField(Agreement, backref="configurations")
 
-    company = ForeignKeyField(Company, backref="agreements")
+    company = ForeignKeyField(Company, backref="configurations")
     device_id = IntegerField(null=True)
 
 

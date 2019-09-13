@@ -6,13 +6,12 @@ from requests import get
 from flask import Flask, redirect, render_template, url_for
 from util.process_api import *
 from flask_socketio import SocketIO, emit
+from models import *
 
 app = Flask(__name__)
 
 app.config["SECRET_KEY"] = "secret!"
 socketio = SocketIO(app)
-
-products = None
 
 thread = None
 thread_lock = Lock()
@@ -59,15 +58,31 @@ def start_heartbeat_thread():
 
 @app.route("/init")
 def init():
-    global products
-    products = init_products()
+    init_products()
     return redirect(url_for("index"))
 
 
 @app.route("/")
 def index():
-    return "nothing"
-    # return render_template("index.html", products=products)
+    for agreement in Agreement.select():
+        company = agreement.company
+        configuration_type = agreement.configuration_type
+        configuration_count = len(Configuration.select().where(Configuration.agreement == agreement))
+
+        print(len(Configuration.select().where(Configuration.agreement == agreement)))
+        print(len(agreement.configurations))
+
+
+
+
+    return render_template("index.html", 
+        companies=Company.select(),
+        agreements=Agreement.select(),
+        configuration_types=ConfigurationType.select(),
+        configurations=Configuration.select(),
+        additions=Addition.select(),
+        products=None
+    )
 
 
 def get_contacts(contact_name):

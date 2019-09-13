@@ -66,7 +66,7 @@ def process_products(agreement_name, product_identifier, configuration_type):
         query = Agreement.select().where(Agreement.id == agreement["id"])
         if not query.exists():
             agreement = Agreement.create(
-                id=agreement["id"], name=agreement["name"], company=company
+                id=agreement["id"], name=agreement["name"], company=company, configuration_type = configuration_type
             )
         else:
             agreement = query.get()
@@ -91,6 +91,7 @@ def process_products(agreement_name, product_identifier, configuration_type):
                     id=configuration["id"],
                     name=configuration["name"],
                     configuration_type=configuration_type,
+                    agreement=agreement,
                     company=company,
                     device_id=device_id,
                 )
