@@ -64,7 +64,8 @@ def init():
 
 @app.route("/")
 def index():
-    return render_template("index.html", products=products)
+    return "nothing"
+    #return render_template("index.html", products=products)
 
 
 def get_contacts(contact_name):
