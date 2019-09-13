@@ -14,6 +14,7 @@ def get_configurations(company_id, configuration_type):
         % (configuration_type, company_id),
     )
 
+
 def get_agreements(agreement_type):
     return execute_query(
         path="/finance/agreements",
@@ -31,7 +32,10 @@ def get_additions(agreement_id, product_identifier):
 
 
 def process_products(agreement_name, product_identifier, configuration_type):
-    print("processing: \n%s\n%s\n%s\n" % (agreement_name, product_identifier, configuration_type))
+    print(
+        "processing: \n%s\n%s\n%s\n"
+        % (agreement_name, product_identifier, configuration_type)
+    )
 
     # Create configuration type, if doesn't exist
     query = ConfigurationType.select().where(
@@ -62,18 +66,20 @@ def process_products(agreement_name, product_identifier, configuration_type):
 
         query = Agreement.select().where(Agreement.id == agreement["id"])
         if not query.exists():
-            agreement = Agreement.create(id = agreement["id"], name = agreement["name"], company = company)
+            agreement = Agreement.create(
+                id=agreement["id"], name=agreement["name"], company=company
+            )
         else:
             agreement = query.get()
-
-
 
         # Create our configurations, if doesn't exist
         configurations = get_configurations(
             company_id=company.id, configuration_type=configuration_type.name
         )
         for configuration in configurations:
-            query = Configuration.select().where(Configuration.id == configuration["id"])
+            query = Configuration.select().where(
+                Configuration.id == configuration["id"]
+            )
             if not query.exists():
                 if "deviceIdentifier" in configuration.keys():
                     if configuration["deviceIdentifier"] == "":
@@ -83,13 +89,12 @@ def process_products(agreement_name, product_identifier, configuration_type):
                 else:
                     device_id = None
                 Configuration.create(
-                    id = configuration["id"],
-                    name = configuration["name"],
+                    id=configuration["id"],
+                    name=configuration["name"],
                     configuration_type=configuration_type,
                     company=company,
                     device_id=device_id,
                 )
-
 
         # Create our additions
         additions = get_additions(
@@ -106,6 +111,7 @@ def process_products(agreement_name, product_identifier, configuration_type):
                     quantity=addition["quantity"],
                     less_included=addition["lessIncluded"],
                 )
+
 
 def init_products():
     products = {}

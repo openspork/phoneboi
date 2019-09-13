@@ -19,12 +19,12 @@ cw_url = "https://api-na.myconnectwise.net/v4_6_release/apis/3.0"
 def execute_query(path, query, page=1, data=[]):
     # print("processing page %s" % page)
     request_text = "%s%s%s&pagesize=1000&page=%s" % (cw_url, path, query, page)
-    #print(request_text)
+    # print(request_text)
     # TODO: try catch for request fail
     r = get(request_text, headers=auth_header)
     current_page = loads(r.text)
     # print("current page: %s" % str(current_page)[:128])
-    if (current_page == [] and page != 1):
+    if current_page == [] and page != 1:
         # print("we are done")
         return data
     data = data + current_page
@@ -33,4 +33,3 @@ def execute_query(path, query, page=1, data=[]):
         return data
     else:
         return execute_query(path, query, page + 1, data)
-

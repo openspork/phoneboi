@@ -9,7 +9,7 @@ from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = 'secret!'
+app.config["SECRET_KEY"] = "secret!"
 socketio = SocketIO(app)
 
 products = None
@@ -17,22 +17,22 @@ products = None
 thread = None
 thread_lock = Lock()
 
-@socketio.on('update', namespace='/test')
+
+@socketio.on("update", namespace="/test")
 def update(message):
-    print('UUID received ' + message["data"])
+    print("UUID received " + message["data"])
 
 
-
-@socketio.on('connect', namespace='/test')
+@socketio.on("connect", namespace="/test")
 def test_connect():
-    print('Client connected')
+    print("Client connected")
     start_heartbeat_thread()
-    emit('server_heartbeat', {'data': 'Connected', 'count': 0})
+    emit("server_heartbeat", {"data": "Connected", "count": 0})
 
 
-@socketio.on('disconnect', namespace='/test')
+@socketio.on("disconnect", namespace="/test")
 def test_disconnect():
-    print('Client disconnected')
+    print("Client disconnected")
 
 
 def heartbeat_thread():
@@ -43,9 +43,11 @@ def heartbeat_thread():
         count += 1
         utc_datetime = datetime.now(timezone.utc)
         utc_datetime_for_js = int(mktime(utc_datetime.timetuple())) * 1000
-        socketio.emit('heartbeat',
-                      {'datetime': utc_datetime_for_js, 'count': count},
-                      namespace='/test')
+        socketio.emit(
+            "heartbeat",
+            {"datetime": utc_datetime_for_js, "count": count},
+            namespace="/test",
+        )
 
 
 def start_heartbeat_thread():
@@ -59,13 +61,13 @@ def start_heartbeat_thread():
 def init():
     global products
     products = init_products()
-    return redirect(url_for('index'))
+    return redirect(url_for("index"))
 
 
 @app.route("/")
 def index():
     return "nothing"
-    #return render_template("index.html", products=products)
+    # return render_template("index.html", products=products)
 
 
 def get_contacts(contact_name):
@@ -133,5 +135,5 @@ def api_contacts(name):
     return dumps(return_data)
 
 
-if __name__ == '__main__':
-    socketio.run(app, debug = True)
+if __name__ == "__main__":
+    socketio.run(app, debug=True)
