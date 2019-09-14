@@ -65,7 +65,7 @@ def init():
 @app.route("/")
 def index():
     agreements = []
-    for agreement in Agreement.select():
+    for product in Agreement.select():
         agreement_fmt = {}
         agreement_fmt["company_name"] = agreement.company.name
         agreement_fmt["configuration_type"] = agreement.configuration_type.name

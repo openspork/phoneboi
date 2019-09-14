@@ -109,6 +109,7 @@ def process_products(agreement_name, product_identifier, configuration_type):
                     id=addition["id"],
                     name=addition["product"]["identifier"],
                     agreement=agreement,
+                    configuration_type = configuration_type,
                     quantity=addition["quantity"],
                     less_included=addition["lessIncluded"],
                 )

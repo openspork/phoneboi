@@ -19,7 +19,7 @@ class ConfigurationType(BaseModel):
 
 
 class Agreement(BaseModel):
-    configuration_type = ForeignKeyField(ConfigurationType, backref='agreements')
+    #configuration_type = ForeignKeyField(ConfigurationType, backref='agreements')
     company = ForeignKeyField(Company, backref="agreements")
 
 class Configuration(BaseModel):
@@ -32,8 +32,13 @@ class Configuration(BaseModel):
 
 class Addition(BaseModel):
     agreement = ForeignKeyField(Agreement, backref="additions")
+    configuration_type = ForeignKeyField(ConfigurationType, backref='additions')
     quantity = IntegerField()
     less_included = FloatField()
+
+
+
+
 
 
 db.connect()
