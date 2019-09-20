@@ -19,7 +19,7 @@
 					<th>Agreement</th>
 				</thead>
 				<tbody>
-					{% for company_name, agreements in companies.items() %}
+					{% for company_name, agreements in companies.items() | sort(attribute='0')  %}
 						<tr>
 							<td>{{ company_name }}</td>
 								<td>
