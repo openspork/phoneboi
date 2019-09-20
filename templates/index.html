@@ -20,33 +20,33 @@
 		<div>
 			<table border="1" id="companies">
 				<thead>
-					<th>Company</th>
-					<th>Agreement</th>
+					<th width="20%">Company</th>
+					<th width="80%">Agreement</th>
 				</thead>
 				<tbody>
 					{% for company_name, agreements in companies.items() | sort(attribute='0')  %}
 						<tr>
-							<td width="20%"><b>{{ company_name }}</b></td>
-								<td width="80%">
+							<td><b>{{ company_name }}</b></td>
+								<td>
 									<table width="100%" border="2" id="agreements" >
 										<thead>
 											<tr>
-												<th>Agreement Name</th>
-												<th>Additions</th>
+												<th width="30%">Agreement Name</th>
+												<th width="70%">Additions</th>
 											</tr>
 										</thead>
 										<tbody>
 											{% for agreement_name, agreement in agreements.items() %}
 												<tr>
-													<td width="30%"> {{ agreement_name }} </td>
-													<td width="70%">
-														<table width="100%"" border="1" id="additions_types">
+													<td> {{ agreement_name }} </td>
+													<td>
+														<table width="100%" border="1" id="additions_types">
 															<thead>
 																<tr>
-																	<th>Name</th>
-																	<th>Quantity</th>
-																	<th>Omitted</th>
-																	<th>Configurations</th>
+																	<th width="25%">Name</th>
+																	<th width="25%">Quantity</th>
+																	<th width="25%">Omitted</th>
+																	<th width="25%">Configurations</th>
 																</tr>
 															</thead>
 															{% for agreement_name, values in agreement["addition_types"].items() %}
