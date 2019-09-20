@@ -31,9 +31,9 @@
 											</tr>
 										</thead>
 										<tbody>
-											{% for agreement in agreements %}
+											{% for agreement_name, agreement in agreements.items() %}
 												<tr>
-													<td> {{ agreement["agreement_name"] }} </td>
+													<td> {{ agreement_name }} </td>
 													<td>
 														<table border="1" id="additions_types">
 															<thead>
