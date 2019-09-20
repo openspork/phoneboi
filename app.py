@@ -65,26 +65,50 @@ def init():
 @app.route("/")
 def index():
     agreements = []
-    for product in Agreement.select():
+    for agreement in Agreement.select():
         agreement_fmt = {}
+
         agreement_fmt["company_name"] = agreement.company.name
-        agreement_fmt["configuration_type"] = agreement.configuration_type.name
-        agreement_fmt["addition_sum"] = len(agreement.additions)
-        addition_quantity_sum = 0
-        addition_less_included_sum = 0
+        agreement_fmt["agreement_name"] = agreement.name
+
+        addition_types = {}
+        # Iterate through all additions
         for addition in agreement.additions:
-            addition_quantity_sum = addition_quantity_sum + addition.quantity
-            addition_less_included_sum = addition_less_included_sum + addition.less_included
-        agreement_fmt["addition_quantity_sum"] = addition_quantity_sum
-        agreement_fmt["addition_less_included_sum"] = addition_less_included_sum
-        agreement_fmt["addition_quantity_sum_adj"] = addition_quantity_sum - addition_less_included_sum
-        agreement_fmt["configuration_sum"] = len(agreement.configurations)       
-        agreement_fmt["configuration_sum_adj"] = agreement_fmt["configuration_sum"] - addition_less_included_sum
+            # If the addition type does not exist, create
+            if not addition.configuration_type.name in addition_types.keys():
+                addition_types[addition.configuration_type.name] = {
+                    "quantity_sum": addition.quantity,
+                    "less_included_sum": addition.less_included,
+                }
+
+            # Otherwise add to current sums
+            else:
+                addition_types[addition.configuration_type.name]["quantity_sum"] = (
+                    addition_types[addition.configuration_type.name]["quantity_sum"]
+                    + addition.quantity
+                )
+                addition_types[addition.configuration_type.name][
+                    "less_included_sum"
+                ] = (
+                    addition_types[addition.configuration_type.name][
+                        "less_included_sum"
+                    ]
+                    + addition.less_included
+                )
+
+            # Get the number of corresponding configurations
+            addition_types[addition.configuration_type.name]["configuration_sum"] = len(
+                Configuration.select().where(
+                    (Configuration.configuration_type == addition.configuration_type)
+                    & (Configuration.company == agreement.company)
+                )
+            )
+
+        agreement_fmt["addition_types"] = addition_types
+
         agreements.append(agreement_fmt)
 
-
-    return render_template("index.html", 
-        agreements = agreements)
+    return render_template("index.html", agreements=agreements)
 
 
 def get_contacts(contact_name):

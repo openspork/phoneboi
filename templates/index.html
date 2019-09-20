@@ -13,31 +13,41 @@
 	</head>
 	<body>
 		<div>
-			<table>
+			<table border="3"  >
 				<thead>
 					<tr>
 						<th>Company</th>
-						<th>Type</th>
-						<th>Additions (Sum)</th>
-						<th>Less Incl.</th>
-						<th>Configs (Sum)</th>
-						<th>Configs (Adj.)</th>
-						<th>Quantity (Sum)</th>
-						<th>Quantity (Adj.)</th>
+						<th>Agreement</th>
+						<th>Additions:</th>
 					</tr>
 				</thead>
 				<tbody>
 					{% for agreement in agreements %}
 						<tr>
-							<td>{{ agreement["company_name"] }}</td>
-							<td>{{ agreement["configuration_type"] }}</td>
-							<td>{{ agreement["addition_sum"] }}</td>
-							<td>{{ agreement["addition_less_included_sum"] }}</td>
-							<td>{{ agreement["configuration_sum"] }}</td>
-							<td>{{ agreement["configuration_sum_adj"] }}</td>
-							<td>{{ agreement ["addition_quantity_sum"] }}</td>
-							<td>{{ agreement ["addition_quantity_sum_adj"] }}</td>
-							<td><button class="update" id="{{ uuid }}">Update Product Count</button></td>
+							<td> {{ agreement["company_name"] }} </td>
+							<td> {{ agreement["agreement_name"] }} </td>
+							<td>
+								<table border="1">
+									<thead>
+										<th>Name</th>
+										<th>Quantity</th>
+										<th>Omitted</th>
+										<th>Configurations</th>
+									</thead>
+									{% for name, values in agreement["addition_types"].items() %}
+										<tbody>
+											<tr>
+												<td> {{ name }} </td>
+												<td> {{ values["quantity_sum"] }} </td>
+												<td> {{ values["less_included_sum"] }} </td>
+												<td> {{ values["configuration_sum"] }} </td>
+												<td><button class="update" id="{{ uuid }}">Update Product Count</button></td>
+											</tr>
+										</tbody>
+									{% endfor %}
+								</table>
+							</td>
+							
 						</tr>
 					{% endfor %}
 				</thead>
