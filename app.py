@@ -64,7 +64,6 @@ def init():
 
 @app.route("/")
 def index():
-    #agreements = []
     companies = {}
     for agreement in Agreement.select():
 
@@ -115,9 +114,6 @@ def index():
 
         companies[agreement.company.name][agreement.name] = agreement_fmt
 
-        #agreements.append(agreement_fmt)
-
-    #return render_template("index.html", agreements=agreements)
     return render_template("index.html", companies=companies)
 
 

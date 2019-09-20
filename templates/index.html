@@ -10,6 +10,11 @@
 		integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I="
 		crossorigin="anonymous"></script>
 		<script src="static/socketio.js"></script>
+		<style type="text/css">
+			
+
+
+		</style>
 	</head>
 	<body>
 		<div>
@@ -21,9 +26,9 @@
 				<tbody>
 					{% for company_name, agreements in companies.items() | sort(attribute='0')  %}
 						<tr>
-							<td>{{ company_name }}</td>
-								<td>
-									<table border="2" id="agreements" >
+							<td width="20%"><b>{{ company_name }}</b></td>
+								<td width="80%">
+									<table width="100%" border="2" id="agreements" >
 										<thead>
 											<tr>
 												<th>Agreement Name</th>
@@ -33,9 +38,9 @@
 										<tbody>
 											{% for agreement_name, agreement in agreements.items() %}
 												<tr>
-													<td> {{ agreement_name }} </td>
-													<td>
-														<table border="1" id="additions_types">
+													<td width="30%"> {{ agreement_name }} </td>
+													<td width="70%">
+														<table width="100%"" border="1" id="additions_types">
 															<thead>
 																<tr>
 																	<th>Name</th>
