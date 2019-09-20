@@ -11,9 +11,6 @@
 		crossorigin="anonymous"></script>
 		<script src="static/socketio.js"></script>
 		<style type="text/css">
-			
-
-
 		</style>
 	</head>
 	<body>
@@ -27,70 +24,69 @@
 					{% for company_name, agreements in companies.items() | sort(attribute='0')  %}
 						<tr>
 							<td><b>{{ company_name }}</b></td>
-								<td>
-									<table width="100%" border="2" id="agreements" >
-										<thead>
+							<td>
+								<table width="100%" border="2" id="agreements" >
+									<thead>
+										<tr>
+											<th width="30%">Agreement Name</th>
+											<th width="70%">Additions</th>
+										</tr>
+									</thead>
+									<tbody>
+										{% for agreement_name, agreement in agreements.items() %}
 											<tr>
-												<th width="30%">Agreement Name</th>
-												<th width="70%">Additions</th>
-											</tr>
-										</thead>
-										<tbody>
-											{% for agreement_name, agreement in agreements.items() %}
-												<tr>
-													<td> {{ agreement_name }} </td>
-													<td>
-														<table width="100%" border="1" id="additions_types">
-															<thead>
+												<td> {{ agreement_name }} </td>
+												<td>
+													<table width="100%" border="1" id="additions_types">
+														<thead>
+															<tr>
+																<th width="25%">Name</th>
+																<th width="25%">Quantity</th>
+																<th width="25%">Omitted</th>
+																<th width="25%">Configurations</th>
+															</tr>
+														</thead>
+														{% for agreement_name, values in agreement["addition_types"].items() %}
+															<tbody>
 																<tr>
-																	<th width="25%">Name</th>
-																	<th width="25%">Quantity</th>
-																	<th width="25%">Omitted</th>
-																	<th width="25%">Configurations</th>
+																	<td> {{ agreement_name }} </td>
+																	<td> {{ values["quantity_sum"] }} </td>
+																	<td> {{ values["less_included_sum"] }} </td>
+																	<td> {{ values["configuration_sum"] }} </td>
+																	<td><button class="update" id="{{ uuid }}">Update Product Count</button></td>
 																</tr>
-															</thead>
-															{% for agreement_name, values in agreement["addition_types"].items() %}
-																<tbody>
-																	<tr>
-																		<td> {{ agreement_name }} </td>
-																		<td> {{ values["quantity_sum"] }} </td>
-																		<td> {{ values["less_included_sum"] }} </td>
-																		<td> {{ values["configuration_sum"] }} </td>
-																		<td><button class="update" id="{{ uuid }}">Update Product Count</button></td>
-																	</tr>
-																</tbody>
-															{% endfor %}
-														</table>
-													</td>
-													
-												</tr>
-											{% endfor %}
-										</thead>
-									</table>
-								</td>
-							</tr>
-						{% endfor %}
-					</tbody>
-				</table>
-			</div>
-			<div>
-				<table>
-					<thead>
-						<tr>
-							<th>Entry</th>
-							<th>Timestamp</th>
-							<th>Status</th>
+															</tbody>
+														{% endfor %}
+													</table>
+												</td>
+												
+											</tr>
+										{% endfor %}
+									</thead>
+								</table>
+							</td>
 						</tr>
-					</thead>
-					<tbody id = "log">
-						
-					</tbody>
-				</table>
-			</div>
-			<div>
-				<h2>Server status:</h2>
-				<text id="heartbeat"></text>
-			</div>
-		{{ companies }}
-		</body>
-	</html>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+		<div>
+			<table>
+				<thead>
+					<tr>
+						<th>Entry</th>
+						<th>Timestamp</th>
+						<th>Status</th>
+					</tr>
+				</thead>
+				<tbody id = "log">
+					
+				</tbody>
+			</table>
+		</div>
+		<div>
+			<h2>Server status:</h2>
+			<text id="heartbeat"></text>
+		</div>
+	</body>
+</html>
