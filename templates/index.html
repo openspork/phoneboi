@@ -31,9 +31,9 @@
 											</tr>
 										</thead>
 										<tbody>
-											{% for agreement_name, agreement_values in agreements.items() %}
+											{% for agreement in agreements %}
 												<tr>
-													<td> {{ agreement_name }} </td>
+													<td> {{ agreement["agreement_name"] }} </td>
 													<td>
 														<table border="1" id="additions_types">
 															<thead>
@@ -44,7 +44,7 @@
 																	<th>Configurations</th>
 																</tr>
 															</thead>
-															{% for agreement_name, values in agreement_values["addition_types"].items() %}
+															{% for agreement_name, values in agreement["addition_types"].items() %}
 																<tbody>
 																	<tr>
 																		<td> {{ agreement_name }} </td>

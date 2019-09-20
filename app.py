@@ -64,7 +64,7 @@ def init():
 
 @app.route("/")
 def index():
-    #agreements = []
+    # agreements = []
     companies = {}
     for agreement in Agreement.select():
 
@@ -111,13 +111,13 @@ def index():
         # map agreement against company
         # If the company does not exist, create
         if not agreement.company.name in companies.keys():
-            companies[agreement.company.name] = agreement.name
+            companies[agreement.company.name] = []
 
-        companies[agreement.company.name] = {agreement.name : agreement_fmt}
+        companies[agreement.company.name].append(agreement_fmt)
 
-        #agreements.append(agreement_fmt)
+        # agreements.append(agreement_fmt)
 
-    #return render_template("index.html", agreements=agreements)
+    # return render_template("index.html", agreements=agreements)
     return render_template("index.html", companies=companies)
 
 
