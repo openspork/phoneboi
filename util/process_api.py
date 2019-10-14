@@ -53,6 +53,16 @@ def process_products(agreement_name, product_identifier, configuration_type):
     for agreement in get_agreements(agreement_name):
         print("Processing %s: %s" % (agreement["company"]["name"], agreement["name"]))
 
+        # Create our agreement type, if doesn't exist
+        query = AgreementType.select().where(AgreementType.id == agreement["type"]["id"])
+        if not query.exists():
+            agreement_type = AgreementType.create(
+                id=agreement["type"]["id"], name=agreement["type"]["name"]
+            )
+        else:
+            agreement_type = query.get()
+
+
         # Create our company, if doesn't exist
         query = Company.select().where(Company.id == agreement["company"]["id"])
         if not query.exists():
@@ -67,7 +77,7 @@ def process_products(agreement_name, product_identifier, configuration_type):
         if not query.exists():
             print("creating agreement: %s of type: %s" % (agreement["name"], configuration_type))
             agreement = Agreement.create(
-                id=agreement["id"], name=agreement["name"], company=company, configuration_type = configuration_type
+                id=agreement["id"], name=agreement["name"], agreement_type=agreement_type, company=company, configuration_type = configuration_type
             )
         else:
             agreement = query.get()

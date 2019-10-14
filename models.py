@@ -17,10 +17,12 @@ class Company(BaseModel):
 class ConfigurationType(BaseModel):    
     pass
 
+class AgreementType(BaseModel):
+    pass
 
 class Agreement(BaseModel):
-    #configuration_type = ForeignKeyField(ConfigurationType, backref='agreements')
     company = ForeignKeyField(Company, backref="agreements")
+    agreement_type = ForeignKeyField(AgreementType, backref="agreements")
 
 class Configuration(BaseModel):
     configuration_type = ForeignKeyField(ConfigurationType, backref="configurations")
@@ -42,4 +44,4 @@ class Addition(BaseModel):
 
 
 db.connect()
-db.create_tables([Company, Agreement, ConfigurationType, Configuration, Addition])
+db.create_tables([Company, Agreement, AgreementType, ConfigurationType, Configuration, Addition])
