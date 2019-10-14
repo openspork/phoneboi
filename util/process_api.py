@@ -113,24 +113,25 @@ def process_products(agreement_name, product_identifier, configuration_type):
                     quantity=addition["quantity"],
                     less_included=addition["lessIncluded"],
                 )
+                print("create addition: %s" % addition["product"]["identifier"] )
 
 
 def init_products():
     products = {}
 
     products["phones"] = {
-        "agreement_name": "ITSG - VOIP",
+        "agreement_name": "%%VOIP",
         "product_identifier": "VOIP - User Licenses",
         "configuration_type": "Managed Phone",
     }
     products["workstations"] = {
         "agreement_name": "MSP%",
-        "product_identifier": "Add Workstations%",
+        "product_identifier": "%%msp-%%-workstation%",
         "configuration_type": "Managed Workstation",
     }
     products["servers"] = {
         "agreement_name": "MSP%",
-        "product_identifier": "Add Servers%",
+        "product_identifier": "%%msp-%%-server%",
         "configuration_type": "Managed Server",
     }
 
