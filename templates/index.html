@@ -28,7 +28,8 @@
 								<table width="100%" border="2" id="agreements" >
 									<thead>
 										<tr>
-											<th width="30%">Agreement Name</th>
+											<th width="15%">Agreement Name</th>
+											<th width="15%">Agreement Type</th>
 											<th width="70%">Additions</th>
 										</tr>
 									</thead>
@@ -36,14 +37,16 @@
 										{% for agreement_name, agreement in agreements.items() %}
 											<tr>
 												<td> {{ agreement_name }} </td>
+												<td> {{ companies[company_name][agreement_name]["agreement_type"] }} </td>
 												<td>
 													<table width="100%" border="1" id="additions_types">
 														<thead>
 															<tr>
-																<th width="25%">Name</th>
-																<th width="25%">Quantity</th>
-																<th width="25%">Omitted</th>
-																<th width="25%">Configurations</th>
+																<th width="20%">Name</th>
+																<th width="20%">Quantity</th>
+																<th width="20%">Omitted</th>
+																<th width="20%">Adjusted</th>
+																<th width="20%">Configurations</th>
 															</tr>
 														</thead>
 														{% for agreement_name, values in agreement["addition_types"].items() %}
@@ -52,6 +55,7 @@
 																	<td> {{ agreement_name }} </td>
 																	<td> {{ values["quantity_sum"] }} </td>
 																	<td> {{ values["less_included_sum"] }} </td>
+																	<td> {{ values["quantity_sum"] - values["less_included_sum"] }} </td>
 																	<td> {{ values["configuration_sum"] }} </td>
 																	<td><button class="update" id="{{ uuid }}">Update Product Count</button></td>
 																</tr>
@@ -90,3 +94,4 @@
 		</div>
 	</body>
 </html>
+{{ companies }}

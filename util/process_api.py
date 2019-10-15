@@ -49,7 +49,7 @@ def process_products(agreement_name, product_identifier, configuration_type):
         print("config type exists: %s" % configuration_type)
         configuration_type = query.get()
 
-        # Process agreements
+    # Process agreements
     for agreement in get_agreements(agreement_name):
         print("Processing %s: %s" % (agreement["company"]["name"], agreement["name"]))
 

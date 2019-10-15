@@ -71,6 +71,7 @@ def index():
 
         agreement_fmt["company_name"] = agreement.company.name
         agreement_fmt["agreement_name"] = agreement.name
+        agreement_fmt["agreement_type"] = agreement.agreement_type.name
 
         addition_types = {}
         # Iterate through all additions
